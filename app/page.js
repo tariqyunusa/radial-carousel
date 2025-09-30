@@ -3,7 +3,7 @@
 import { useRef, useEffect } from "react"
 import { Canvas, useFrame, useThree } from "@react-three/fiber"
 import { useTexture } from "@react-three/drei"
-
+import * as THREE from "three"
 const images = [
   "/gradient-1.jpg","/gradient-2.jpg","/gradient-3.jpg",
   "/gradient-4.jpg","/gradient-5.jpg","/gradient-6.jpg",
@@ -33,7 +33,9 @@ function Roundcarousel() {
 
   useFrame(() => {
     rotation.current += velocity.current
-    velocity.current *= 0.92 
+    velocity.current *= 0.89 
+
+   const speed =  Math.abs(velocity.current)
 
     for (let i = 0; i < images.length; i++) {
       const m = meshRefs.current[i]
@@ -44,7 +46,18 @@ function Roundcarousel() {
       const y = Math.sin(angle) * radius
 
       m.position.set(x, y, 0)     
-      m.rotation.set(0, 0, 0)      
+      m.rotation.set(0, 0, 0)   
+      
+      const targetScale = THREE.MathUtils.mapLinear(
+        Math.min(speed, 1),
+        0,
+        1,
+        1.0,
+        0.5
+      )
+
+      const newScale = THREE.MathUtils.lerp(m.scale.y, targetScale, 0.1)
+      m.scale.set(newScale, newScale, 1)
     }
   })
 
